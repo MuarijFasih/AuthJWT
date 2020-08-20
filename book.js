@@ -1,12 +1,33 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const users = require('./users');
 const books = require('./booklist');
+const cors = require('cors');
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cors());
 
 const accessTokenSecret = 'usamabandar';
+
+app.post('/login', (req, res) => {
+    //reading the username and password from request body
+    const { username, password} = req.body;
+
+    const user = users.find(u => {
+        return u.username === username && u.password === password
+    });
+
+    if (user){
+        //generate acces token
+        const accessToken = jwt.sign({username: user.username, role: user.role}, accessTokenSecret);
+        res.json({accessToken});
+    } else {
+        res.send('Username or password incorrect');
+    }
+
+});
 
 const authenticateJWT = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -15,7 +36,6 @@ const authenticateJWT = (req, res, next) => {
 
         jwt.verify(token, accessTokenSecret, (err, user) => {
             if(err){
-                console.log('before authenticata1231123123e');
                 return res.sendStatus(403);
             }
 
