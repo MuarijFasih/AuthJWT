@@ -2,9 +2,11 @@ const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const users = require('./users');
 
 app.use(bodyParser.json());
+app.use(cors());
 
 const accessTokenSecret = 'usamabandar';
 
